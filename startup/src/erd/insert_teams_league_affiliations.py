@@ -31,5 +31,5 @@ def upload_teams_league_affiliations():
                     except Exception as E:
                         print(E)
 
-        conn.close()
+    conn.close()
     

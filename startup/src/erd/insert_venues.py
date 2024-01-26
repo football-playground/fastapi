@@ -35,5 +35,5 @@ def upload_venues():
                     except Exception as E:
                         print(E)
 
-        conn.close()
+    conn.close()
     

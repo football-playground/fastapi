@@ -33,5 +33,5 @@ def upload_teams():
                     except Exception as E:
                         print(E)
 
-        conn.close()
+    conn.close()
     

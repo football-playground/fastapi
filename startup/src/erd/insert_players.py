@@ -20,7 +20,7 @@ def upload_players():
                     player_lastname = player["player"]["lastname"]
                     player_birth = player["player"]["birth"]["date"]
                     player_place = player["player"]["birth"]["place"]
-                    player_country = data["player"]["birth"]["country"]
+                    player_country = player["player"]["birth"]["country"]
                     player_nationality = player["player"]["nationality"]
                     player_height = player["player"]["height"].split(" cm")[0] if player["player"]["height"] != None else None
                     player_weight = player["player"]["weight"].split(" kg")[0] if player["player"]["weight"] != None else None
@@ -28,7 +28,7 @@ def upload_players():
                     
                     # set query
                     query = """INSERT INTO players 
-                    (player_id, player_firstname, player_lastname, player_birth, player_place, player_country, player_nationality, player_height, player_weight, player_photo) 
+                    (player_id, player_firstname, player_lastname, player_birth, player_place, player_placecountry, player_nationality, player_height, player_weight, player_photo) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
                     values = (player_id, player_firstname, player_lastname, player_birth, player_place, player_country, player_nationality, player_height, player_weight, player_photo)
                     
@@ -36,7 +36,7 @@ def upload_players():
                     try:
                         conn.commit(query=query, values=values)
                     except Exception as E:
-                        print(E)
+                        raise ValueError(E)
 
-        conn.close()
+    conn.close()
     

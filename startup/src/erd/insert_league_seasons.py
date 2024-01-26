@@ -27,7 +27,7 @@ def upload_league_seasons():
             try:
                 conn.commit(query=query, values=values)
             except Exception as E:
-                print(E)
+                raise ValueError(E)
 
     conn.close()
     
