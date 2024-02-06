@@ -18,6 +18,11 @@ def append_json(data:dict, dir:str):
     with open(dir, "a", encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
         
+def overwrite_json(data:dict, dir:str):
+    os.makedirs(os.path.dirname(dir), exist_ok=True)
+    with open(dir, "w", encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+        
 def get_fixture_ids(response):
     fixture_ids = []
     for fixture in response["response"]:
