@@ -45,11 +45,11 @@ def fixtures(fixtures_ids:str, league:str, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/fixtures/{date}.json"
             append_json(response, dir)
             
-            # kafka publish
-            topic = league
-            key = 'fixtures'
-            partition = 0
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = league
+            # key = 'fixtures'
+            # partition = 0
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Fixtures for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -68,11 +68,11 @@ def injuries(fixtures_id:str, league:str, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/injuries/{date}.json"
             append_json(response, dir)
             
-            # kafka publish
-            topic = league
-            key = 'injuries'
-            partition = 1
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = league
+            # key = 'injuries'
+            # partition = 1
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Injuries for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -91,11 +91,11 @@ def team_statistics(league:str, league_id:int, season:int, team:int, date:str, k
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/teamstat/{team}_{date}.json"
             overwrite_json(response, dir)
             
-            # kafka publish
-            topic = league
-            key = 'teamstat'
-            partition = 2
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = league
+            # key = 'teamstat'
+            # partition = 2
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Team Statistics for {date} in league {league} team {team} successfully saved."}
     except Exception as e:
@@ -112,11 +112,11 @@ def player_statistics(league:str, season:int, team:int, date:str, kafka_conf:dic
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/playerstat/{team}_{date}.json"
             overwrite_json(response, dir)
             
-            # kafka publish
-            topic = league
-            key = 'playerstat'
-            partition = 3
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = league
+            # key = 'playerstat'
+            # partition = 3
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Player Statistics for {date} in league {league} team {team} successfully saved."}
     except Exception as e:
@@ -133,11 +133,11 @@ def coach_sidelined(coach_id:int, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/coachsidelined/{coach_id}_{date}.json"
             overwrite_json(response, dir)
             
-            # kafka publish
-            topic = 'sidelined'
-            key = 'coachsidelined'
-            partition = 4
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = 'sidelined'
+            # key = 'coachsidelined'
+            # partition = 4
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Coach Sidelined for {date} in coach {coach_id} successfully saved."}
     except Exception as e:
@@ -154,11 +154,11 @@ def player_sidelined(player_id:int, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/playersidelined/{player_id}_{date}.json"
             overwrite_json(response, dir)
             
-            # kafka publish
-            topic = 'sidelined'
-            key = 'playersidelined'
-            partition = 5
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = 'sidelined'
+            # key = 'playersidelined'
+            # partition = 5
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Player Sidelined for {date} in player {player_id} successfully saved."}
     except Exception as e:
