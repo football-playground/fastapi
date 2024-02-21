@@ -36,15 +36,3 @@ async def get_player_statistics(team_id:int, date:str):
     season = 2023
     kafka_conf = {'bootstrap.servers': 'localhost:9092'}
     return player_statistics(league, season, team_id, date, kafka_conf)
-
-@router_sp.get("/spain/coachsidelined")
-async def get_coach_sidelined(coach_id:int, date:str):
-    league = "spain"
-    kafka_conf = {'bootstrap.servers': 'localhost:9092'}
-    return coach_sidelined(league, coach_id, date, kafka_conf)
-
-@router_sp.get("/spain/playersidelined")
-async def get_player_sidelined(player_id:int, date:str):
-    league = "spain"
-    kafka_conf = {'bootstrap.servers': 'localhost:9092'}
-    return player_sidelined(league, player_id, date, kafka_conf)

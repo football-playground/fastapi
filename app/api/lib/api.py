@@ -89,7 +89,7 @@ def team_statistics(league:str, league_id:int, season:int, team:int, date:str, k
         else:
             # 로컬 json 저장
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/teamstat/{team}_{date}.json"
-            append_json(response, dir)
+            overwrite_json(response, dir)
             
             # kafka publish
             topic = league
@@ -110,7 +110,7 @@ def player_statistics(league:str, season:int, team:int, date:str, kafka_conf:dic
         else:
             # 로컬 json 저장
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/playerstat/{team}_{date}.json"
-            append_json(response, dir)
+            overwrite_json(response, dir)
             
             # kafka publish
             topic = league
@@ -122,7 +122,7 @@ def player_statistics(league:str, season:int, team:int, date:str, kafka_conf:dic
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-def coach_sidelined(league:str, coach_id:int, date:str, kafka_conf:dict):
+def coach_sidelined(coach_id:int, date:str, kafka_conf:dict):
     try:
         endpoint_str = f"sidelined?coach={coach_id}"
         response = get_response(endpoint_str)
@@ -130,20 +130,20 @@ def coach_sidelined(league:str, coach_id:int, date:str, kafka_conf:dict):
             return {"status": "no data"}
         else:
             # 로컬 json 저장
-            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/coachsidelined/{coach_id}_{date}.json"
+            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/coachsidelined/{coach_id}_{date}.json"
             overwrite_json(response, dir)
             
             # kafka publish
-            topic = league
+            topic = 'sidelined'
             key = 'coachsidelined'
             partition = 4
             publish(kafka_conf, topic, partition, key, response)
             
-            return {"status": "success", "message": f"Coach Sidelined for {date} in league {league} coach {coach_id} successfully saved."}
+            return {"status": "success", "message": f"Coach Sidelined for {date} in coach {coach_id} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-def player_sidelined(league:str, player_id:int, date:str, kafka_conf:dict):
+def player_sidelined(player_id:int, date:str, kafka_conf:dict):
     try:
         endpoint_str = f"sidelined?player={player_id}"
         response = get_response(endpoint_str)
@@ -151,16 +151,16 @@ def player_sidelined(league:str, player_id:int, date:str, kafka_conf:dict):
             return {"status": "no data"}
         else:
             # 로컬 json 저장
-            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/playersidelined/{player_id}_{date}.json"
+            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/playersidelined/{player_id}_{date}.json"
             overwrite_json(response, dir)
             
             # kafka publish
-            topic = league
+            topic = 'sidelined'
             key = 'playersidelined'
             partition = 5
             publish(kafka_conf, topic, partition, key, response)
             
-            return {"status": "success", "message": f"Player Sidelined for {date} in league {league} player {player_id} successfully saved."}
+            return {"status": "success", "message": f"Player Sidelined for {date} in player {player_id} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
