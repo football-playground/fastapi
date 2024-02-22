@@ -46,11 +46,11 @@ def fixtures(fixtures_ids:str, league:str, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/fixtures/{date}.json"
             append_json(response, dir)
             
-            # kafka publish
-            topic = league
-            key = 'fixtures'
-            partition = 0
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = league
+            # key = 'fixtures'
+            # partition = 0
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Fixtures for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -69,11 +69,11 @@ def injuries(fixtures_id:str, league:str, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/injuries/{date}.json"
             append_json(response, dir)
             
-            # kafka publish
-            topic = league
-            key = 'injuries'
-            partition = 1
-            publish(kafka_conf, topic, partition, key, response)
+            # # kafka publish
+            # topic = league
+            # key = 'injuries'
+            # partition = 1
+            # publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Injuries for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -101,11 +101,11 @@ def team_statistics(league:str, league_id:int, season:int, date:str, kafka_conf:
         dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/teamstat/{date}.json"
         overwrite_json(merged_json, dir)
            
-        # kafka publish
-        topic = league
-        key = 'teamstat'
-        partition = 2
-        publish(kafka_conf, topic, partition, key, merged_json)
+        # # kafka publish
+        # topic = league
+        # key = 'teamstat'
+        # partition = 2
+        # publish(kafka_conf, topic, partition, key, merged_json)
            
         return {"status": "success", "message": f"Team Statistics for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -139,11 +139,11 @@ def player_statistics(league:str, league_id:int, season:int, date:str, kafka_con
         dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/playerstat/{date}.json"
         overwrite_json(merged_json, dir)
         
-        # kafka publish
-        topic = league
-        key = 'playerstat'
-        partition = 3
-        publish(kafka_conf, topic, partition, key, merged_json)
+        # # kafka publish
+        # topic = league
+        # key = 'playerstat'
+        # partition = 3
+        # publish(kafka_conf, topic, partition, key, merged_json)
         
         return {"status": "success", "message": f"Player Statistics for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -172,11 +172,11 @@ def coach_sidelined(date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/coachsidelined/{date}.json"
             overwrite_json(merged_json, dir)
 
-            # kafka publish
-            topic = 'sidelined'
-            key = 'coachsidelined'
-            partition = 0
-            publish(kafka_conf, topic, partition, key, merged_json)
+            # # kafka publish
+            # topic = 'sidelined'
+            # key = 'coachsidelined'
+            # partition = 0
+            # publish(kafka_conf, topic, partition, key, merged_json)
 
             return {"status": "success", "message": f"Coach Sidelined for {date} successfully saved."}
     except Exception as e:
@@ -205,11 +205,11 @@ def player_sidelined(date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/playersidelined/{date}.json"
             overwrite_json(merged_json, dir)
 
-            # kafka publish
-            topic = 'sidelined'
-            key = 'playersidelined'
-            partition = 1
-            publish(kafka_conf, topic, partition, key, merged_json)
+            # # kafka publish
+            # topic = 'sidelined'
+            # key = 'playersidelined'
+            # partition = 1
+            # publish(kafka_conf, topic, partition, key, merged_json)
 
             return {"status": "success", "message": f"Player Sidelined for {date} successfully saved."}
     except Exception as e:
