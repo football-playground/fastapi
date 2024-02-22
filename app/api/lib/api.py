@@ -1,4 +1,5 @@
 import requests
+from lib.postgres import PostgresConnector
 from lib.etc import *
 from lib.kafkaproducer import *
 
@@ -45,11 +46,11 @@ def fixtures(fixtures_ids:str, league:str, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/fixtures/{date}.json"
             append_json(response, dir)
             
-            # # kafka publish
-            # topic = league
-            # key = 'fixtures'
-            # partition = 0
-            # publish(kafka_conf, topic, partition, key, response)
+            # kafka publish
+            topic = league
+            key = 'fixtures'
+            partition = 0
+            publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Fixtures for {date} in league {league} successfully saved."}
     except Exception as e:
@@ -68,99 +69,149 @@ def injuries(fixtures_id:str, league:str, date:str, kafka_conf:dict):
             dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/injuries/{date}.json"
             append_json(response, dir)
             
-            # # kafka publish
-            # topic = league
-            # key = 'injuries'
-            # partition = 1
-            # publish(kafka_conf, topic, partition, key, response)
+            # kafka publish
+            topic = league
+            key = 'injuries'
+            partition = 1
+            publish(kafka_conf, topic, partition, key, response)
             
             return {"status": "success", "message": f"Injuries for {date} in league {league} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-def team_statistics(league:str, league_id:int, season:int, team:int, date:str, kafka_conf:dict):
+def team_statistics(league:str, league_id:int, season:int, date:str, kafka_conf:dict):
     try:
-        endpoint_str = f"teams/statistics?league={league_id}&season={season}&team={team}&date={date}"
+        conn = PostgresConnector(database='football')       
+        query = "SELECT team_id FROM teams_league_affiliations WHERE league_id = %s"     
+        value = (league_id,)
+        returned = conn.fetchall(query=query, values=value)
         
-        # 또는 dir = "hdfs경로"
-        response = get_response(endpoint_str)
-        if len(response['response']) == 0:
-            return {"status": "no data"}
-        else:
-            # 로컬 json 저장
-            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/teamstat/{team}_{date}.json"
-            overwrite_json(response, dir)
-            
-            # # kafka publish
-            # topic = league
-            # key = 'teamstat'
-            # partition = 2
-            # publish(kafka_conf, topic, partition, key, response)
-            
-            return {"status": "success", "message": f"Team Statistics for {date} in league {league} team {team} successfully saved."}
+        merged_json = []
+        for index in returned:
+           team_id = index[0]
+           endpoint_str = f"teams/statistics?league={league_id}&season={season}&team={team_id}&date={date}"
+           # 또는 dir = "hdfs경로"
+           response = get_response(endpoint_str)
+           if len(response['response']) == 0:
+               return {"status": "no data"}
+           else:
+               merged_json.append(response['response'])
+        
+        # 로컬 json 저장
+        dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/teamstat/{date}.json"
+        overwrite_json(merged_json, dir)
+           
+        # kafka publish
+        topic = league
+        key = 'teamstat'
+        partition = 2
+        publish(kafka_conf, topic, partition, key, merged_json)
+           
+        return {"status": "success", "message": f"Team Statistics for {date} in league {league} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-def player_statistics(league:str, season:int, team:int, date:str, kafka_conf:dict):
+def player_statistics(league:str, league_id:int, season:int, date:str, kafka_conf:dict):
     try:
-        endpoint_str = f"players?season={season}&team={team}"
-        response = get_response(endpoint_str)
-        if len(response['response']) == 0:
-            return {"status": "no data"}
-        else:
-            # 로컬 json 저장
-            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/playerstat/{team}_{date}.json"
-            overwrite_json(response, dir)
-            
-            # # kafka publish
-            # topic = league
-            # key = 'playerstat'
-            # partition = 3
-            # publish(kafka_conf, topic, partition, key, response)
-            
-            return {"status": "success", "message": f"Player Statistics for {date} in league {league} team {team} successfully saved."}
+        conn = PostgresConnector(database='football')       
+        query = "SELECT team_id FROM teams_league_affiliations WHERE league_id = %s"     
+        value = (league_id,)
+        returned = conn.fetchall(query=query, values=value)
+        
+        merged_json = []
+        for index in returned:
+           team_id = index[0]
+           endpoint_str = f"players?season={season}&team={team_id}"
+           # 또는 dir = "hdfs경로"
+           response = get_response(endpoint_str)
+           if len(response['response']) == 0:
+               return {"status": "no data"}
+           else:
+               merged_json.extend(response['response'])
+               total_pages = response['paging']['total']
+               if total_pages >= 2:
+                   for page in range(2, total_pages + 1):
+                       endpoint_str = f"players?season={season}&team={team_id}&page={page}"
+                       response = get_response(endpoint_str)
+                       merged_json.extend(response['response'])
+           
+        # 로컬 json 저장
+        dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/playerstat/{date}.json"
+        overwrite_json(merged_json, dir)
+        
+        # kafka publish
+        topic = league
+        key = 'playerstat'
+        partition = 3
+        publish(kafka_conf, topic, partition, key, merged_json)
+        
+        return {"status": "success", "message": f"Player Statistics for {date} in league {league} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-def coach_sidelined(coach_id:int, date:str, kafka_conf:dict):
+def coach_sidelined(date:str, kafka_conf:dict):
     try:
-        endpoint_str = f"sidelined?coach={coach_id}"
-        response = get_response(endpoint_str)
-        if len(response['response']) == 0:
+        conn = PostgresConnector(database='football')       
+        query = "SELECT coach_id FROM coachs"     
+        returned = conn.fetchall(query=query)
+
+        merged_json = []
+        for index in returned:
+            coach_id = index[0]
+            endpoint_str = f"sidelined?coach={coach_id}"
+            response = get_response(endpoint_str)
+            if len(response['response']) == 0:
+                continue
+            else:
+                merged_json.append(response['response'])
+                
+        if merged_json == None:
             return {"status": "no data"}
-        else:
+        else: 
             # 로컬 json 저장
-            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/coachsidelined/{coach_id}_{date}.json"
-            overwrite_json(response, dir)
-            
-            # # kafka publish
-            # topic = 'sidelined'
-            # key = 'coachsidelined'
-            # partition = 4
-            # publish(kafka_conf, topic, partition, key, response)
-            
-            return {"status": "success", "message": f"Coach Sidelined for {date} in coach {coach_id} successfully saved."}
+            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/coachsidelined/{date}.json"
+            overwrite_json(merged_json, dir)
+
+            # kafka publish
+            topic = 'sidelined'
+            key = 'coachsidelined'
+            partition = 0
+            publish(kafka_conf, topic, partition, key, merged_json)
+
+            return {"status": "success", "message": f"Coach Sidelined for {date} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-def player_sidelined(player_id:int, date:str, kafka_conf:dict):
+def player_sidelined(date:str, kafka_conf:dict):
     try:
-        endpoint_str = f"sidelined?player={player_id}"
-        response = get_response(endpoint_str)
-        if len(response['response']) == 0:
+        conn = PostgresConnector(database='football')       
+        query = "SELECT coach_id FROM coachs"     
+        returned = conn.fetchall(query=query)
+        
+        merged_json = []
+        for index in returned:
+            player_id = index[0]
+            endpoint_str = f"sidelined?player={player_id}"
+            response = get_response(endpoint_str)
+            if len(response['response']) == 0:
+                continue
+            else:
+                merged_json.append(response['response'])
+                
+        if merged_json == None:
             return {"status": "no data"}
         else:
             # 로컬 json 저장
-            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/playersidelined/{player_id}_{date}.json"
-            overwrite_json(response, dir)
-            
-            # # kafka publish
-            # topic = 'sidelined'
-            # key = 'playersidelined'
-            # partition = 5
-            # publish(kafka_conf, topic, partition, key, response)
-            
-            return {"status": "success", "message": f"Player Sidelined for {date} in player {player_id} successfully saved."}
+            dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/playersidelined/{date}.json"
+            overwrite_json(merged_json, dir)
+
+            # kafka publish
+            topic = 'sidelined'
+            key = 'playersidelined'
+            partition = 1
+            publish(kafka_conf, topic, partition, key, merged_json)
+
+            return {"status": "success", "message": f"Player Sidelined for {date} successfully saved."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 

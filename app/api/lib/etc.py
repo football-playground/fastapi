@@ -13,12 +13,12 @@ def get_config_values(sets:list):
     
     return returned
 
-def append_json(data:dict, dir:str):
+def append_json(data, dir:str):
     os.makedirs(os.path.dirname(dir), exist_ok=True)
     with open(dir, "a", encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
         
-def overwrite_json(data:dict, dir:str):
+def overwrite_json(data, dir:str):
     os.makedirs(os.path.dirname(dir), exist_ok=True)
     with open(dir, "w", encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)

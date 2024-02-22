@@ -23,16 +23,17 @@ async def get_injuries(id:str, date:str):
     return injuries(id, league, date, kafka_conf)
 
 @router_fr.get("/france/teamstat")
-async def get_team_statistics(team_id:int, date:str):
+async def get_team_statistics(date:str):
     league = "france"
     league_id = 61
     season = 2023
     kafka_conf = {'bootstrap.servers': 'localhost:9092'}
-    return team_statistics(league, league_id, season, team_id, date, kafka_conf)
+    return team_statistics(league, league_id, season, date, kafka_conf)
 
 @router_fr.get("/france/playerstat")
-async def get_player_statistics(team_id:int, date:str):
+async def get_player_statistics(date:str):
     league = "france"
+    league_id = 61
     season = 2023
-    kafka_conf = {'bootstrap.servers': 'localhost:9092'}
-    return player_statistics(league, season, team_id, date, kafka_conf)
+    kafka_conf = {'bootstrap.servers': 'localhost:9092', 'compression.type': 'snappy', 'message.max.bytes': 52428800}
+    return player_statistics(league, league_id, season, date, kafka_conf)
