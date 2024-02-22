@@ -185,7 +185,7 @@ def coach_sidelined(date:str, kafka_conf:dict):
 def player_sidelined(date:str, kafka_conf:dict):
     try:
         conn = PostgresConnector(database='football')       
-        query = "SELECT coach_id FROM coachs"     
+        query = "SELECT player_id FROM players"     
         returned = conn.fetchall(query=query)
         
         merged_json = []
