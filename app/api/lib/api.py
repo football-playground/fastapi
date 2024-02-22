@@ -25,6 +25,7 @@ def fixtures_ids(league:str, league_id:int, season:int, date:str):
         dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/fixtures_ids/{date}.json"
         # 또는 dir = "hdfs경로"
         response = get_response(endpoint)
+        # print(response)
         if len(response['response']) == 0:
             return {"status": "no data"}
         else:
@@ -85,9 +86,9 @@ def team_statistics(league:str, league_id:int, season:int, date:str, kafka_conf:
         query = "SELECT team_id FROM teams_league_affiliations WHERE league_id = %s"     
         value = (league_id,)
         returned = conn.fetchall(query=query, values=value)
-        
+        sample = [(33,),(34,)]
         merged_json = []
-        for index in returned:
+        for index in sample:
            team_id = index[0]
            endpoint_str = f"teams/statistics?league={league_id}&season={season}&team={team_id}&date={date}"
            # 또는 dir = "hdfs경로"
@@ -117,9 +118,9 @@ def player_statistics(league:str, league_id:int, season:int, date:str, kafka_con
         query = "SELECT team_id FROM teams_league_affiliations WHERE league_id = %s"     
         value = (league_id,)
         returned = conn.fetchall(query=query, values=value)
-        
+        sample = [(33,),(34,)]
         merged_json = []
-        for index in returned:
+        for index in sample:
            team_id = index[0]
            endpoint_str = f"players?season={season}&team={team_id}"
            # 또는 dir = "hdfs경로"
@@ -154,12 +155,13 @@ def coach_sidelined(date:str, kafka_conf:dict):
         conn = PostgresConnector(database='football')       
         query = "SELECT coach_id FROM coachs"     
         returned = conn.fetchall(query=query)
-
+        sample = [(85,),(2407,)]
         merged_json = []
-        for index in returned:
+        for index in sample:
             coach_id = index[0]
             endpoint_str = f"sidelined?coach={coach_id}"
             response = get_response(endpoint_str)
+            print(response)
             if len(response['response']) == 0:
                 continue
             else:
@@ -187,12 +189,13 @@ def player_sidelined(date:str, kafka_conf:dict):
         conn = PostgresConnector(database='football')       
         query = "SELECT player_id FROM players"     
         returned = conn.fetchall(query=query)
-        
+        sample = [(18,),(25,)]
         merged_json = []
-        for index in returned:
+        for index in sample:
             player_id = index[0]
             endpoint_str = f"sidelined?player={player_id}"
             response = get_response(endpoint_str)
+            print(response)
             if len(response['response']) == 0:
                 continue
             else:
