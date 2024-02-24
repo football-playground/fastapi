@@ -10,5 +10,5 @@ async def get_coach_sidelined(date:str):
 
 @router_sidelined.get("/playersidelined")
 async def get_player_sidelined(date:str):
-    kafka_conf = {'bootstrap.servers': 'localhost:9092'}
+    kafka_conf = {'bootstrap.servers': 'localhost:9092', 'compression.type': 'snappy', 'message.max.bytes': 52428800}
     return player_sidelined(date, kafka_conf)

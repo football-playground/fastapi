@@ -25,7 +25,7 @@ def fixtures_ids(league:str, league_id:int, season:int, date:str):
         dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/fixtures_ids/{date}.json"
         # 또는 dir = "hdfs경로"
         response = get_response(endpoint)
-        # print(response)
+        print(response)
         if len(response['response']) == 0:
             return {"status": "no data"}
         else:
