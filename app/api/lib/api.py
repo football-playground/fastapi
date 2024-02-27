@@ -23,7 +23,6 @@ def fixtures_ids(league:str, league_id:int, season:int, date:str):
     try:
         endpoint = f"fixtures?league={league_id}&season={season}&from={date}&to={date}"
         dir = f"{os.path.dirname(os.path.abspath(__file__))}/../../datas/{league}/fixtures_ids/{date}.json"
-        # 또는 dir = "hdfs경로"
         response = get_response(endpoint)
         print(response)
         if len(response['response']) == 0:
@@ -36,8 +35,6 @@ def fixtures_ids(league:str, league_id:int, season:int, date:str):
     
 def fixtures(fixtures_ids:str, league:str, date:str, kafka_conf:dict):
     try:
-        # Airflow에서 스트링으로 변환
-        #fixtures_ids_str = "-".join(map(str, fixtures_ids))
         endpoint_str = f"fixtures?ids={fixtures_ids}"
         response = get_response(endpoint_str)
         print(response)
@@ -60,8 +57,6 @@ def fixtures(fixtures_ids:str, league:str, date:str, kafka_conf:dict):
     
 def injuries(fixtures_id:str, league:str, date:str, kafka_conf:dict):
     try:
-        # Airflow에서 스트링으로 변환
-        #fixtures_ids_str = "-".join(map(str, fixtures_ids))
         endpoint_str = f"injuries?fixture={fixtures_id}"
         response = get_response(endpoint_str)
         if len(response['response']) == 0:
@@ -92,7 +87,6 @@ def team_statistics(league:str, league_id:int, season:int, date:str, kafka_conf:
         for index in returned:
            team_id = index[0]
            endpoint_str = f"teams/statistics?league={league_id}&season={season}&team={team_id}&date={date}"
-           # 또는 dir = "hdfs경로"
            response = get_response(endpoint_str)
            if len(response['response']) == 0:
                return {"status": "no data"}
@@ -124,7 +118,6 @@ def player_statistics(league:str, league_id:int, season:int, date:str, kafka_con
         for index in returned:
            team_id = index[0]
            endpoint_str = f"players?season={season}&team={team_id}"
-           # 또는 dir = "hdfs경로"
            response = get_response(endpoint_str)
            if len(response['response']) == 0:
                return {"status": "no data"}
@@ -199,7 +192,7 @@ def player_sidelined(date:str, kafka_conf:dict):
             player_id = index[0]
             endpoint_str = f"sidelined?player={player_id}"
             response = get_response(endpoint_str)
-            print(response)
+            # print(response)
             if len(response['response']) == 0:
                 continue
             else:
